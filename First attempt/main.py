@@ -47,8 +47,6 @@ def load_model(filepath='best_model.pth'):
     model.load_state_dict(checkpoint['model_state_dict'])
     
     print(f"Uploaded a model trained up to the epoch: {checkpoint['epoch']}")
-    print(f"Train losses: {checkpoint['train_losses'][-5:]}")
-    print(f"Val losses: {checkpoint['val_losses'][-5:]}")
     
     return model, checkpoint
 
@@ -100,7 +98,7 @@ def train_model():
         train_losses.append(epoch_train_loss)
         val_losses.append(epoch_val_loss)
 
-        print(f'\n===== Epoch {ep+1}/{EPOCHS} =====')
+        print(f'===== Epoch {ep+1}/{EPOCHS} =====')
         print(f'---- Train Loss: {epoch_train_loss:.4f}')
         print(f'---- Val Loss: {epoch_val_loss:.4f}')
     
@@ -149,7 +147,7 @@ def create_submit(image_names, predictions, output_file='submission.csv'):
     
     submission_df.to_csv(output_file, index=False)
 
-    print("\nPrediction statistics:")
+    print("Prediction statistics:")
     for class_name in class_names:
         print(f"{class_name}: mean={submission_df[class_name].mean():.4f}")
     
@@ -246,30 +244,30 @@ scaler = GradScaler(enabled=(device == 'cuda'))  # Automatic activation for CUDA
 EPOCHS = 10
 
 if __name__ == '__main__':
-    # print("Training start...")
-    # train_losses, val_losses = train_model()
+    print("Training start...")
+    train_losses, val_losses = train_model()
 
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(train_losses, label="Train Loss", marker='o')
-    # plt.plot(val_losses, label="Val Loss", marker='o')
-    # plt.xlabel("Epoch")
-    # plt.ylabel("Loss")
-    # plt.title("Progress")
-    # plt.legend()
-    # plt.grid(True)
-    # plt.savefig('training_progress.png')
-    # plt.show()
+    plt.figure(figsize=(10, 6))
+    plt.plot(train_losses, label="Train Loss", marker='o')
+    plt.plot(val_losses, label="Val Loss", marker='o')
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Progress")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('training_progress.png')
+    plt.show()
 
-    # print("\nSaving model...")
-    # save_model(
-    #     model=model,
-    #     optimizer=optimizer,
-    #     scheduler=scheduler,
-    #     train_losses=train_losses,
-    #     val_losses=val_losses,
-    #     epoch=EPOCHS,
-    #     filepath='xray_classifier_model.pth'
-    # )
+    print("Saving model...")
+    save_model(
+        model=model,
+        optimizer=optimizer,
+        scheduler=scheduler,
+        train_losses=train_losses,
+        val_losses=val_losses,
+        epoch=EPOCHS,
+        filepath='xray_classifier_model.pth'
+    )
     
     trained_model, checkpoint = load_model('xray_classifier_model.pth')
     trained_model = trained_model.to(device)
@@ -290,7 +288,4 @@ if __name__ == '__main__':
         output_file='submission.csv'
     )
     
-    print("\nFirst 5 predictions:")
-    print(submission_df.head())
-    
-    print(f"\nSubmission file created!")
+    print("Submission file created!")
